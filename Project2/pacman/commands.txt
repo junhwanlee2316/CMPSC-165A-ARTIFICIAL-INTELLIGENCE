@@ -1,0 +1,36 @@
+python pacman.py
+python pacman.py --layout testMaze --pacman GoWestAgent
+python pacman.py --layout tinyMaze --pacman GoWestAgent
+python pacman.py -h
+
+python pacman.py -l threeByOneMaze -p SearchAgent -a fn=ids
+python pacman.py -l testMaze -p SearchAgent -a fn=ids
+python pacman.py -l mediumMaze -p SearchAgent -a fn=ids
+python pacman.py -l contoursMaze -p SearchAgent -a fn=ids
+python pacman.py -l bigMaze -p SearchAgent -a fn=ids -z .5
+
+python autograder.py
+python autograder.py -q q1
+python autograder.py -t test_cases/graph_backtrack
+
+python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+
+python pacman.py -l tinyCorners -p SearchAgent -a fn=astar,prob=CornersProblem
+python pacman.py -l mediumCorners -p SearchAgent -a fn=astar,prob=CornersProblem
+
+python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5
+python pacman.py -l mediumCorners -p SearchAgent -a fn=aStarSearch,prob=CornersProblem,heuristic=cornersHeuristic -z 0.5
+
+python pacman.py -l testSearch -p AStarFoodSearchAgent
+python pacman.py -l testSearch -p SearchAgent -a fn=astar,prob=FoodSearchProblem,heuristic=foodHeuristic
+python pacman.py -l trickySearch -p AStarFoodSearchAgent
+
+python autograder.py -q q3
+python autograder.py -q q3 --no-graphics
+python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+python pacman.py -p MinimaxAgent -l trappedClassic -a depth=3
+
+python autograder.py -q q4
+python pacman.py -p ExpectimaxAgent -l minimaxClassic -a depth=3
+
+
