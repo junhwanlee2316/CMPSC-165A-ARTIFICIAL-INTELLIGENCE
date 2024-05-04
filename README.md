@@ -1,5 +1,4 @@
 # UCSB CMPSC 165A Artificial Intelligence
-*Date: 05/23/2024*
 
 ## Overview
 This repository contains the projects completed for UCSB's CMPSC 165A course on Artificial Intelligence.
