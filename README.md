@@ -1,7 +1,7 @@
 # UCSB CMPSC 165A Artificial Intelligence
 
 ## Overview
-This repository contains the projects completed for UCSB's CMPSC 165A course on Artificial Intelligence.
+This repository contains the projects completed for UCSB's CMPSC 165A course on Artificial Intelligence. The skeleton code for the projects was provided by UC Berkeley(https://inst.eecs.berkeley.edu/~cs188/sp22/projects/).
 
 ### Projects
 1. **Classifier Agent**
