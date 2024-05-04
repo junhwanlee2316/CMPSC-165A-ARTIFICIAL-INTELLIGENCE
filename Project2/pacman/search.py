@@ -20,6 +20,7 @@ Pacman agents (in searchAgents.py).
 import util
 import sys
 import copy
+from util import Stack
 
 class SearchProblem:
     """
@@ -137,33 +138,135 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def iterativeDeepeningSearch(problem):
-    """
-    Perform DFS with increasingly larger depth. Begin with a depth of 1 and increment depth by 1 at every step.
+    
+    # Iterative Depth Limited Search helper function
+    def _dls(depthLimit):
+        
+        # Stack contains pair of current node and its depth
+        stack = util.Stack()
+        visited = set()
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+        # Create a start node and push to stack
+        src = Node(problem.getStartState(), None, None, 0)
+        stack.push((src, 0)) 
+        visited.add(src.state)
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+        # Begin DFS
+        while stack.isEmpty() == 0:
+            
+            # Get current node and depth
+            curr, currDepth = stack.pop()
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.goalTest(problem.getStartState()))
-    print("Actions from start state:", problem.getActions(problem.getStartState()))
+            # Check for depth limit
+            if currDepth > depthLimit:
+                continue  
+            
+            # Find successors
+            for action in problem.getActions(curr.state):
+                childState = problem.getResult(curr.state,action)
+                
+                # If the child stat is not visited already
+                if childState not in visited:
+                    
+                    # Create a new node
+                    child = Node(childState, curr, action, problem.getCost(curr.state, action))
+                    
+                    # Check if the goal state reached
+                    if problem.goalTest(childState):
+                        return child
+                    
+                    # Add child state to visited and continue DFS with current depth + 1
+                    else:
+                        stack.push((child, currDepth + 1))
+                        visited.add(childState)
+                        
+        return None
+    
+    maxDepth = 0
+    
+    # Begin IDS
+    while True:
+        
+        # Run depth limited search
+        goalNode = _dls(maxDepth)
+        
+        # Backtrack goal node to find the path
+        if goalNode: return backtrackPath(goalNode)
+        maxDepth += 1
 
-    Then try to print the resulting state for one of those actions
-    by calling problem.getResult(problem.getStartState(), one_of_the_actions)
-    or the resulting cost for one of these actions
-    by calling problem.getCost(problem.getStartState(), one_of_the_actions)
+    return None
 
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    # Helper function to update priority queue
+    def _updateFrontier(item, priority, pq):
+        
+        # Convert into a list for easier manipulation
+        heap = list(pq.heap)
+        
+        # Iterate through the items in the heap
+        for i, (h_p, h_c, h_i) in enumerate(heap):
+            
+            # Check if the states of the items match
+            if h_i[0].state == item[0].state:
+                # Existing priority is less than or equal to new priority
+                if h_p <= priority:
+                    break
+                
+                # Remove existing item from the heap
+                del heap[i]
+                
+                # Append the new item with updated priority
+                heap.append((priority, h_c, item))
+                
+                # Sort the heap to make sure it is in order based on updated priority
+                heap.sort()
+                break
+        else:
+            # If the loop completes without breaking, add the item with its priority
+            heap.append((priority, item[1], item))
+             
+            # Sort the heap to make sure it is in order based on updated priority
+            heap.sort()
 
+        # Update the priority queue with the modified heap
+        pq.heap = heap
+
+    pq = util.PriorityQueue()
+    visited = set()
+    src = Node(problem.getStartState(), None, None, 0)
+    pq.push( (src, []), heuristic(problem.getStartState(), problem) )
+    visited.add( problem.getStartState() )
+
+    while pq.isEmpty() == 0:
+        node, actions = pq.pop()
+    
+        if problem.goalTest(node.state):
+            return backtrackPath(node)
+
+        if node.state not in visited:
+            visited.add(node.state)
+
+        for action in problem.getActions(node.state):
+            childState = problem.getResult(node.state, action)
+            if childState not in visited:
+                childNode = Node(childState, node, action, problem.getCost(node.state, action))
+                totalCost = problem.getCostOfActions(actions+[action])+heuristic(childState, problem)
+                _updateFrontier((childNode, actions + [action]), totalCost, pq)
+    
+    return None
+
+    
+def backtrackPath(node):
+    path = []
+    while node.parent:
+        path.insert(0, node.action)
+        node = node.parent
+    return path
+    
+    
 # Abbreviations
 bfs = breadthFirstSearch
 astar = aStarSearch
